@@ -47,11 +47,14 @@ const GroupingTool: React.FC<GroupingToolProps> = ({ employees }) => {
       });
     });
 
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `分組結果_${new Date().toLocaleDateString()}.csv`);
+    link.setAttribute("download", `分組結果_${dateStr}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

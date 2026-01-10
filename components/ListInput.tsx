@@ -41,7 +41,7 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
       const names = content.split('\n')
         .map(line => line.split(',')[0].replace(/"/g, '').trim())
         .filter(name => name !== '' && name.toLowerCase() !== 'name');
-      
+
       const newList = names.map((name, index) => ({ id: `${Date.now()}-${index}-${name}`, name }));
       onUpdate(newList);
       setRawText(names.join('\n'));
@@ -65,7 +65,7 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
 
   const loadMockData = () => {
     const mockNames = [
-      '陳大文', '林小明', '王美麗', '張志豪', '李佳佳', 
+      '陳大文', '林小明', '王美麗', '張志豪', '李佳佳',
       '劉一龍', '黃曉彤', '周杰西', '吳佩珊', '趙子龍',
       '林小明', '陳大文', '孫悟空', '豬八戒', '沙悟淨'
     ];
@@ -86,21 +86,45 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
               人員名單來源
             </h2>
             <div className="flex gap-4">
-              <button 
+              <button
                 onClick={loadMockData}
                 className="text-xs text-blue-500 hover:text-blue-700 transition-colors uppercase tracking-widest font-semibold"
               >
                 載入範例
               </button>
-              <button 
+              <button
                 onClick={clearList}
                 className="text-xs text-gray-400 hover:text-red-500 transition-colors uppercase tracking-widest font-semibold"
               >
                 全部清除
               </button>
+              <button
+                onClick={() => {
+                  if (employees.length === 0) return;
+                  let csvContent = "\uFEFF";
+                  csvContent += "姓名\n";
+                  employees.forEach(e => csvContent += `"${e.name}"\n`);
+                  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement("a");
+                  const now = new Date();
+                  const dateStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+                  link.setAttribute("href", url);
+                  link.setAttribute("download", `名單備份_${dateStr}.csv`);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                className="text-xs text-green-600 hover:text-green-700 transition-colors uppercase tracking-widest font-semibold flex items-center gap-1"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                導出名單
+              </button>
             </div>
           </div>
-          
+
           <div className="relative group">
             <textarea
               className="w-full h-80 p-4 border-2 border-gray-100 rounded-xl focus:ring-0 focus:border-black transition-all resize-none font-mono text-sm leading-relaxed outline-none scrollbar-hide"
@@ -142,7 +166,7 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
               名單統計
             </h2>
             {duplicateNames.size > 0 && (
-              <button 
+              <button
                 onClick={removeDuplicates}
                 className="text-xs bg-red-50 text-red-600 px-3 py-1 rounded-full border border-red-100 hover:bg-red-100 transition-colors font-bold"
               >
@@ -150,7 +174,7 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
               </button>
             )}
           </div>
-          
+
           <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
             <div className="flex items-end gap-3 mb-1">
               <div className="text-4xl font-bold text-black">{employees.length}</div>
@@ -171,13 +195,12 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
             </div>
             <div className="mt-4 flex flex-wrap gap-2 max-h-40 overflow-y-auto scrollbar-hide">
               {employees.slice(0, 100).map((e) => (
-                <span 
-                  key={e.id} 
-                  className={`px-2 py-1 bg-white border rounded text-xs transition-colors ${
-                    duplicateNames.has(e.name) 
-                      ? 'border-red-300 bg-red-50 text-red-600' 
+                <span
+                  key={e.id}
+                  className={`px-2 py-1 bg-white border rounded text-xs transition-colors ${duplicateNames.has(e.name)
+                      ? 'border-red-300 bg-red-50 text-red-600'
                       : 'border-gray-200 text-gray-600'
-                  }`}
+                    }`}
                 >
                   {e.name}
                 </span>
@@ -201,7 +224,7 @@ const ListInput: React.FC<ListInputProps> = ({ employees, onUpdate }) => {
               <p className="text-xs text-gray-400">人員名單已同步，您可以前往抽籤或分組功能。</p>
             </div>
             <svg className="w-12 h-12 text-gray-800 absolute -right-2 -bottom-2 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
           </div>
         </div>
